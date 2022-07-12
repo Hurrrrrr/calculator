@@ -1,10 +1,11 @@
 // Basic calculator
 
 let displayValue = 0;
-let numStore = null;
+let storeValue = null;
+let opStore = null;
 
 
-function add(num1, num2) {
+function addition(num1, num2) {
     return (num1 + num2);
 }
 
@@ -22,13 +23,13 @@ function divide(num1, num2) {
 
 function operate(operator, first, second) {
     switch(operator) {
-        case "+":
-            return add(first, second);
-        case "-":
+        case "add":
+            return addition(first, second);
+        case "sub":
             return subtract(first, second);
-        case "*":
+        case "mul":
             return multiply(first, second);
-        case "/":
+        case "divy":
             return divide(first, second);
     }
 }
@@ -47,6 +48,22 @@ function numButton(num) {
 
 function clearDisplay() {
     displayValue = 0;
-    numStore = null;
+    storeValue = null;
+    opStore = null;
+    updateDisplay();
+}
+
+function opButton(opInput) {
+    if (opStore != null) {
+        displayValue = operate(opStore, storeValue, displayValue);
+        updateDisplay();
+    }
+    opStore = opInput;
+    storeValue = displayValue;
+    displayValue = 0;
+}
+
+function equals() {
+    displayValue = operate(opStore, storeValue, displayValue);
     updateDisplay();
 }
