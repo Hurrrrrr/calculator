@@ -1,8 +1,9 @@
 // Basic calculator
 
-let displayValue = 0;
-let storeValue = null;
-let opStore = null;
+let displayValue = 0;       // Used to store the current number being manipulated by user
+let storeValue = null;      // Used to store the previous number
+let opStore = null;         // Used to store the most recently-selected operator
+let lastNum = null;          // Used to store the type (number/equals or operator) of the most recent operator
 
 
 function addition(num1, num2) {
@@ -18,6 +19,10 @@ function multiply(num1, num2) {
 }
 
 function divide(num1, num2) {
+    if (num2 === 0) {
+        alert("Error! Cannot divide by zero.");
+        return NaN;
+    }
     return (num1 / num2);
 }
 
@@ -37,12 +42,14 @@ function operate(operator, first, second) {
 function updateDisplay() {
     const display = document.getElementById("display");
     display.innerText = displayValue;
+
 }
 
 function numButton(num) {
     if (displayValue < 1000000000 && displayValue > -1000000000) {      // ensure the number is fewer than ten digits
         displayValue = (displayValue * 10) + num;                       // press the calculator number button
         updateDisplay();
+        lastNum = true;
     }
 }
 
@@ -50,20 +57,31 @@ function clearDisplay() {
     displayValue = 0;
     storeValue = null;
     opStore = null;
+    lastNum = null;
     updateDisplay();
 }
 
 function opButton(opInput) {
-    if (opStore != null) {
-        displayValue = operate(opStore, storeValue, displayValue);
-        updateDisplay();
+    // If the user has already input an operator before this current one
+    // perform the previously staged operation
+    if (lastNum === true) {     // Only operate if the last key pressed was a number
+        if (opStore != null) {
+            displayValue = operate(opStore, storeValue, displayValue);
+            updateDisplay();
+        }
+        opStore = opInput;
+        storeValue = displayValue;
+        displayValue = 0;
+        lastNum = false;
     }
-    opStore = opInput;
-    storeValue = displayValue;
-    displayValue = 0;
 }
 
 function equals() {
-    displayValue = operate(opStore, storeValue, displayValue);
-    updateDisplay();
+    // Do nothing is the user hasn't selected an operator yet
+    if (opStore != null) {
+        displayValue = operate(opStore, storeValue, displayValue);
+        opStore = null;
+        lastNum = true;
+        updateDisplay();
+    }
 }
